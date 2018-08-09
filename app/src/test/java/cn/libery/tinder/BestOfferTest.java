@@ -418,12 +418,12 @@ public class BestOfferTest {
             }
         });
 
-       /* Coupon emptyCoupon = new Coupon();
+        Coupon emptyCoupon = new Coupon();
         emptyCoupon.discount = 0;
         emptyCoupon.spending = 0;
         emptyCoupon.id = "-1";
         emptyCoupon.every = 0;
-        result.add(emptyCoupon);*/
+        result.add(emptyCoupon);
         return result;
     }
 

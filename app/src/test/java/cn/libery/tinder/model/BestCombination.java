@@ -92,14 +92,14 @@ public class BestCombination {
                         if (e.getKey() >= 0) {
                             break;
                         } else {
-                            //定金大于零则说明优惠券使用了每满且类似10减20的类型 当组合小于零时
+                            //定金大于零则说明优惠券使用了每满且类似10减20的类型 当支付金额小于零时
                             key = e.getKey();
                         }
                     } else {
                         if (e.getKey() > 0) {
                             break;
                         } else {
-                            //定金等于0 且支付届小于等于零
+                            //定金等于0 且支付金额小于等于零
                             key = e.getKey();
                         }
                     }
