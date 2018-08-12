@@ -22,6 +22,7 @@ public class BestOfferTest {
 
     @Test
     public void bestPath() {
+        test();
         BestPath1();
         BestPath2();
         BestPath3();
@@ -404,16 +405,16 @@ public class BestOfferTest {
         Collections.sort(result, new Comparator<Coupon>() {
             @Override
             public int compare(Coupon o1, Coupon o2) {
-                int compareEvery = Integer.compare(o2.every, o1.every);
-                if (compareEvery == 0) {
-                    int compareSpending = Double.compare(o1.spending, o2.spending);
-                    if (compareSpending == 0) {
+                int compareSpending = Double.compare(o1.spending, o2.spending);
+                if (compareSpending == 0) {
+                    int compareEvery = Integer.compare(o2.every, o1.every);
+                    if (compareEvery == 0) {
                         return Double.compare(o1.discount, o2.discount);
                     } else {
                         return compareSpending;
                     }
                 } else {
-                    return compareEvery;
+                    return compareSpending;
                 }
             }
         });
@@ -445,7 +446,7 @@ public class BestOfferTest {
         Coupon c1 = new Coupon();
         c1.every = 0;
         c1.spending = 10;
-        c1.discount = 5;
+        c1.discount = 10;
 
         Coupon c2 = new Coupon();
         c2.every = 0;
@@ -479,12 +480,13 @@ public class BestOfferTest {
         coupons.add(c4);
         coupons.add(c5);
         coupons.add(c6);
-        coupons = initCoupon(24, coupons);
+        int totalPrice = 10;
+        coupons = initCoupon(totalPrice, coupons);
         for (Coupon coupon : coupons) {
             System.out.println(coupon.toString());
         }
 
-        BestCombination b = BestCombination.calculatorBestCombination(24, coupons, initBooking(new ArrayList<Booking>()));
+        BestCombination b = BestCombination.calculatorBestCombination(totalPrice, coupons, initBooking(new ArrayList<Booking>()));
         System.out.println(b.toString());
     }
 }

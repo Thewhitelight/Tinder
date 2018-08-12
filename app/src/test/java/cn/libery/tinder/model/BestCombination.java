@@ -87,7 +87,6 @@ public class BestCombination {
             } else {
                 double key = 0;
                 for (Map.Entry<Double, BestCombination> e : map.entrySet()) {
-                    System.out.println(e.getKey() + " " + e.getValue().toString());
                     if (e.getValue().booking.amount > 0) {
                         if (e.getKey() >= 0) {
                             break;
