@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cn.libery.selectavatar">
+    package="cn.libery.avatar">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -7,7 +7,7 @@
 
     <application>
         <activity
-            android:name=".SelectAvatarActivity"
+            android:name="cn.libery.avatar.SelectAvatarActivity"
             android:theme="@style/TransparentTheme" />
 
         <provider
