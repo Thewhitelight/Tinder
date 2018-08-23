@@ -12,12 +12,14 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
 import cn.libery.carousel.model.Banner;
+import cn.libery.carousel.recycler.BannerAdapter;
+import cn.libery.carousel.recycler.OnItemClickListener;
+import cn.libery.carousel.recycler.SmoothLinearLayoutManager;
 import cn.libery.carousel.view.Indicator;
 
 /**
@@ -34,6 +36,7 @@ public class Carousel extends FrameLayout {
     private Indicator indicator;
     public static final int MSG_WHAT = 1;
     private boolean canAutoScroll;
+    private OnItemClickListener onItemClickListener;
 
     public Carousel(@NonNull Context context) {
         this(context, null);
@@ -82,6 +85,10 @@ public class Carousel extends FrameLayout {
         }
     }
 
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
     private void initView() {
         bannerRecycler = new RecyclerView(getContext());
         BannerAdapter adapter = new BannerAdapter(this, banners);
@@ -114,12 +121,15 @@ public class Carousel extends FrameLayout {
                 }
             }
         });
-        adapter.setOnItemClickListener(new BannerAdapter.OnItemClickListener() {
+        adapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Toast.makeText(getContext(), "" + position, Toast.LENGTH_SHORT).show();
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(position);
+                }
             }
         });
+
     }
 
     @Override
