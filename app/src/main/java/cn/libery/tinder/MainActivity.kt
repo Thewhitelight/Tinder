@@ -55,6 +55,6 @@ class MainActivity : AppCompatActivity() {
         banners.add(Banner("http://n.sinaimg.cn/tech/transform/529/w284h245/20180822/t3QG-fzrwica1378454.gif", IMAGE))
         banners.add(Banner("http://f.us.sinaimg.cn/000XduoYlx07n2fcfO1G010402001PpW0k010.mp4?label=mp4_720p&template=1280x720.28&Expires=1534949695&ssig=bxZduauD09&KID=unistore,video", VIDEO))
         carousel.banners = banners
-        carousel.delaySecond = 5
+        carousel.delaySecond = 3
     }
 }

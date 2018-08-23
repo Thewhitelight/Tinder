@@ -27,6 +27,12 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerHold
 
     private Carousel carousel;
     private List<Banner> banners;
+    private OnItemClickListener onItemClickListener;
+
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
 
     public BannerAdapter(Carousel carousel, List<Banner> banners) {
         this.carousel = carousel;
@@ -48,7 +54,7 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BannerHolder holder, int position) {
+    public void onBindViewHolder(final @NonNull BannerHolder holder, int position) {
         Banner banner = banners.get(position % banners.size());
         holder.contentView.removeAllViews();
         switch (banner.getType()) {
@@ -75,7 +81,7 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerHold
                 });
                 video.setOnPlayerStateListener(new SampleVideo.OnPlayerStateListener() {
                     @Override
-                    public void onStartPlay() {
+                    public void onStart() {
                         carousel.stopExecutor();
                     }
 
@@ -88,6 +94,15 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerHold
                 break;
             default:
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(holder.getAdapterPosition() % banners.size());
+                }
+            }
+        });
+
     }
 
     @Override
@@ -103,6 +118,11 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerHold
             super(itemView);
             contentView = itemView.findViewById(R.id.item_banner);
         }
+
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
     }
 
 }

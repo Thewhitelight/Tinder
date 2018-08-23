@@ -9,10 +9,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -33,6 +33,7 @@ public class Carousel extends FrameLayout {
     private MyHandler myHandler;
     private Indicator indicator;
     public static final int MSG_WHAT = 1;
+    private boolean canAutoScroll;
 
     public Carousel(@NonNull Context context) {
         this(context, null);
@@ -63,6 +64,22 @@ public class Carousel extends FrameLayout {
     public void setDelaySecond(int delaySecond) {
         this.delaySecond = delaySecond;
         startExecutor();
+    }
+
+    public boolean isCanAutoScroll() {
+        return canAutoScroll;
+    }
+
+    /**
+     * @param canAutoScroll 是否自动轮播 默认true
+     */
+    public void setCanAutoScroll(boolean canAutoScroll) {
+        this.canAutoScroll = canAutoScroll;
+        if (canAutoScroll) {
+            startExecutor();
+        } else {
+            stopExecutor();
+        }
     }
 
     private void initView() {
@@ -97,6 +114,12 @@ public class Carousel extends FrameLayout {
                 }
             }
         });
+        adapter.setOnItemClickListener(new BannerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Toast.makeText(getContext(), "" + position, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -116,11 +139,9 @@ public class Carousel extends FrameLayout {
     public boolean dispatchTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.e("onTouchEvent", "down");
                 stopExecutor();
                 break;
             case MotionEvent.ACTION_UP:
-                Log.e("onTouchEvent", "up");
                 startExecutor();
                 break;
             default:

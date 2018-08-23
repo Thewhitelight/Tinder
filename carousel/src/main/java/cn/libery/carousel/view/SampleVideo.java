@@ -53,18 +53,22 @@ public class SampleVideo extends StandardGSYVideoPlayer {
             @Override
             public void onClickStartIcon(String url, Object... objects) {
                 if (onPlayerStateListener != null) {
-                    onPlayerStateListener.onStartPlay();
+                    onPlayerStateListener.onStart();
                 }
             }
 
             @Override
             public void onClickStartError(String url, Object... objects) {
-
+                if (onPlayerStateListener != null) {
+                    onPlayerStateListener.onStart();
+                }
             }
 
             @Override
             public void onClickStop(String url, Object... objects) {
-
+                if (onPlayerStateListener != null) {
+                    onPlayerStateListener.onFinish();
+                }
             }
 
             @Override
@@ -74,7 +78,9 @@ public class SampleVideo extends StandardGSYVideoPlayer {
 
             @Override
             public void onClickResume(String url, Object... objects) {
-
+                if (onPlayerStateListener != null) {
+                    onPlayerStateListener.onStart();
+                }
             }
 
             @Override
@@ -101,12 +107,16 @@ public class SampleVideo extends StandardGSYVideoPlayer {
 
             @Override
             public void onEnterFullscreen(String url, Object... objects) {
-
+                if (onPlayerStateListener != null) {
+                    onPlayerStateListener.onStart();
+                }
             }
 
             @Override
             public void onQuitFullscreen(String url, Object... objects) {
-
+                if (onPlayerStateListener != null) {
+                    onPlayerStateListener.onFinish();
+                }
             }
 
             @Override
@@ -199,7 +209,7 @@ public class SampleVideo extends StandardGSYVideoPlayer {
     }
 
     public interface OnPlayerStateListener {
-        void onStartPlay();
+        void onStart();
 
         void onFinish();
     }
