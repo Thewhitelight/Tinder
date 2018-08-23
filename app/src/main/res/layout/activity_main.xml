@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:src="@drawable/ic_launcher_background"
         android:text="Hello World!"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -32,5 +32,10 @@
             android:src="@drawable/ic_launcher_background" />
     </FrameLayout>
 
+    <cn.libery.carousel.Carousel
+        android:id="@+id/carousel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/img2_layout" />
 
 </android.support.constraint.ConstraintLayout>
