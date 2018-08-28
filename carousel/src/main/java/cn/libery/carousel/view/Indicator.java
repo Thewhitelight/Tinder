@@ -40,9 +40,14 @@ public class Indicator extends View {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setMeasuredDimension((radius * 2 * total + space * (total - 1)), MeasureSpec.getSize(heightMeasureSpec));
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        float startPosition = getWidth() / 2 - (radius * 2 * total + space * (total - 1)) / 2;
         canvas.save();
         for (int i = 0; i < total; i++) {
             if (position == i) {
@@ -50,7 +55,7 @@ public class Indicator extends View {
             } else {
                 paint.setColor(Color.RED);
             }
-            canvas.drawCircle(startPosition + radius * (2 * i + 1) + i * space, getHeight() / 2, radius, paint);
+            canvas.drawCircle(radius * (2 * i + 1) + i * space, getHeight() / 2, radius, paint);
         }
         canvas.restore();
     }
@@ -78,6 +83,7 @@ public class Indicator extends View {
 
     public void setSpace(int space) {
         this.space = space;
+        invalidate();
     }
 
     public int getRadius() {
@@ -86,6 +92,7 @@ public class Indicator extends View {
 
     public void setRadius(int radius) {
         this.radius = radius;
+        invalidate();
     }
 
 }

@@ -18,6 +18,7 @@ import cn.libery.carousel.R;
 import cn.libery.carousel.model.Banner;
 import cn.libery.carousel.view.SampleVideo;
 
+import static cn.libery.carousel.model.Banner.CUSTOM;
 import static cn.libery.carousel.model.Banner.IMAGE;
 import static cn.libery.carousel.model.Banner.VIDEO;
 
@@ -93,6 +94,9 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerHold
                     }
                 });
                 holder.contentView.addView(video);
+                break;
+            case CUSTOM:
+                holder.contentView.addView(banner.getView());
                 break;
             default:
         }

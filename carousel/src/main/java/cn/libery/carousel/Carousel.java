@@ -28,14 +28,16 @@ import cn.libery.carousel.view.Indicator;
  */
 public class Carousel extends FrameLayout {
 
-    private List<Banner> banners;
-    private int delaySecond = 5;
-    private SmoothLinearLayoutManager layoutManager;
-    private RecyclerView bannerRecycler;
-    private MyHandler myHandler;
-    private Indicator indicator;
     public static final int MSG_WHAT = 1;
+    private int delaySecond = 5;
     private boolean canAutoScroll;
+    private List<Banner> banners;
+
+    private MyHandler myHandler;
+    private RecyclerView bannerRecycler;
+    private Indicator indicator;
+    private SmoothLinearLayoutManager layoutManager;
+
     private OnItemClickListener onItemClickListener;
 
     public Carousel(@NonNull Context context) {
@@ -102,8 +104,8 @@ public class Carousel extends FrameLayout {
         snapHelper.attachToRecyclerView(bannerRecycler);
 
         addView(bannerRecycler);
-        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, 40);
-        params.gravity = Gravity.BOTTOM;
+        LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, 40);
+        params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
         indicator = new Indicator(getContext());
         indicator.setTotal(banners.size());
         addView(indicator, params);

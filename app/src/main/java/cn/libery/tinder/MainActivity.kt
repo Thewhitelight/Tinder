@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import cn.libery.avatar.Avatar
 import cn.libery.badgeview.BadgeView
@@ -49,12 +50,13 @@ class MainActivity : AppCompatActivity() {
         badge3.bindView(img2_layout)
 
         val banners = ArrayList<Banner>(6)
-        banners.add(Banner("http://wx1.sinaimg.cn/orj360/5d098bccly1fuihjws6ihj21yw2567wh.jpg", IMAGE))
-        banners.add(Banner("http://jmtvideo.oss-cn-hangzhou.aliyuncs.com/DDIezgXLSxUZCOU.mp4", VIDEO))
-        banners.add(Banner("https://upload-images.jianshu.io/upload_images/7078011-430b292666591af5.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/700", IMAGE))
-        banners.add(Banner("http://img.soogif.com/HkkOHvJc0bSj10yemFqUfe3rcf8B628o.mp4", VIDEO))
-        banners.add(Banner("http://n.sinaimg.cn/tech/transform/529/w284h245/20180822/t3QG-fzrwica1378454.gif", IMAGE))
-        banners.add(Banner("http://f.us.sinaimg.cn/000XduoYlx07n2fcfO1G010402001PpW0k010.mp4?label=mp4_720p&template=1280x720.28&Expires=1534949695&ssig=bxZduauD09&KID=unistore,video", VIDEO))
+        banners.add(Banner(IMAGE, "http://wx1.sinaimg.cn/orj360/5d098bccly1fuihjws6ihj21yw2567wh.jpg"))
+        banners.add(Banner(VIDEO, "http://jmtvideo.oss-cn-hangzhou.aliyuncs.com/DDIezgXLSxUZCOU.mp4"))
+        banners.add(Banner(IMAGE, "https://upload-images.jianshu.io/upload_images/7078011-430b292666591af5.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/700"))
+        banners.add(Banner(VIDEO, "http://img.soogif.com/HkkOHvJc0bSj10yemFqUfe3rcf8B628o.mp4"))
+        banners.add(Banner(IMAGE, "http://n.sinaimg.cn/tech/transform/529/w284h245/20180822/t3QG-fzrwica1378454.gif"))
+        banners.add(Banner(VIDEO, "http://f.us.sinaimg.cn/000XduoYlx07n2fcfO1G010402001PpW0k010.mp4?label=mp4_720p&template=1280x720.28&Expires=1534949695&ssig=bxZduauD09&KID=unistore,video"))
+        banners.add(Banner(View(this)))
         carousel.banners = banners
         carousel.delaySecond = 7
         carousel.setOnItemClickListener { position ->
