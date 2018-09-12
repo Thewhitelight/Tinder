@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">behavior</string>
+    <string name="search_behavior">cn.libery.behavior.SearchBehavior</string>
+    <string name="recycler_behavior">cn.libery.behavior.RecyclerBehavior</string>
+</resources>

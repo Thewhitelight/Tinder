@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import java.lang.ref.WeakReference;
@@ -35,10 +36,10 @@ public class Carousel extends FrameLayout {
 
     private MyHandler myHandler;
     private RecyclerView bannerRecycler;
-    private Indicator indicator;
+    private Indicator defaultIndicator;
     private SmoothLinearLayoutManager layoutManager;
-
     private OnItemClickListener onItemClickListener;
+    private OnScrollPositionListener onScrollPositionListener;
 
     public Carousel(@NonNull Context context) {
         this(context, null);
@@ -91,6 +92,10 @@ public class Carousel extends FrameLayout {
         this.onItemClickListener = onItemClickListener;
     }
 
+    public void setOnScrollPositionListener(OnScrollPositionListener onScrollPositionListener) {
+        this.onScrollPositionListener = onScrollPositionListener;
+    }
+
     private void initView() {
         bannerRecycler = new RecyclerView(getContext());
         BannerAdapter adapter = new BannerAdapter(this, banners);
@@ -104,22 +109,24 @@ public class Carousel extends FrameLayout {
         snapHelper.attachToRecyclerView(bannerRecycler);
 
         addView(bannerRecycler);
-        LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, 40);
-        params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-        indicator = new Indicator(getContext());
-        indicator.setTotal(banners.size());
-        addView(indicator, params);
+        setIndicator(null, null);
 
         bannerRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 int i = layoutManager.findFirstVisibleItemPosition() % banners.size();
-                indicator.setPosition(i);
-                if (banners.get(i).getType() == Banner.VIDEO) {
-                    indicator.setVisibility(GONE);
-                } else {
-                    indicator.setVisibility(VISIBLE);
+                if (defaultIndicator != null) {
+                    defaultIndicator.setPosition(i);
+                    if (banners.get(i).getType() == Banner.VIDEO) {
+                        defaultIndicator.setVisibility(GONE);
+                    } else {
+                        defaultIndicator.setVisibility(VISIBLE);
+                    }
+                }
+
+                if (onScrollPositionListener != null) {
+                    onScrollPositionListener.onScrollPosition(i);
                 }
             }
         });
@@ -129,9 +136,24 @@ public class Carousel extends FrameLayout {
                 if (onItemClickListener != null) {
                     onItemClickListener.onItemClick(position);
                 }
+
             }
         });
 
+    }
+
+    public void setIndicator(View indicatorView, FrameLayout.LayoutParams params) {
+        if (indicatorView == null) {
+            LayoutParams defaultParams = new LayoutParams(LayoutParams.WRAP_CONTENT, 40);
+            defaultParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+            defaultIndicator = new Indicator(getContext());
+            defaultIndicator.setTotal(banners.size());
+            addView(defaultIndicator, defaultParams);
+        } else {
+            removeView(defaultIndicator);
+            indicatorView.setLayoutParams(params);
+            addView(indicatorView);
+        }
     }
 
     @Override
@@ -186,7 +208,7 @@ public class Carousel extends FrameLayout {
     }
 
     public void setIndicatorVisible(int visible) {
-        indicator.setVisibility(visible);
+        defaultIndicator.setVisibility(visible);
     }
 
     private void scroll() {
@@ -212,4 +234,8 @@ public class Carousel extends FrameLayout {
 
     }
 
+
+    public interface OnScrollPositionListener {
+        void onScrollPosition(int position);
+    }
 }
