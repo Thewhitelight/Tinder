@@ -28,7 +28,6 @@ public class BehaviorActivity extends AppCompatActivity {
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
                 return new Holder(getLayoutInflater().inflate(R.layout.item_simple, parent, false));
             }
-
             @Override
             public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
                 Holder holder = (Holder) viewHolder;

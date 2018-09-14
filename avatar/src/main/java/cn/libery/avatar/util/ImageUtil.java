@@ -48,7 +48,7 @@ public class ImageUtil {
         String uriString = uri.toString();
         uriString = Uri.decode(uriString);
 
-        String pre1 = "file://" + SD_PATH + File.separator;
+        String pre1 = "file://" + SD_PATH;
         String pre2 = "file://" + SDCARD_MNT + File.separator;
 
         if (uriString.startsWith(pre1)) {
@@ -139,10 +139,15 @@ public class ImageUtil {
 
     public static void compressHeadPhoto(String path) {
         try {
+            int degree = readPictureDegree(path);
+            if (degree == 0) {
+                return;
+            }
             Bitmap bm = BitmapFactory.decodeFile(path);
-            bm = rotateImageView(readPictureDegree(path), bm);
+            bm = rotateImageView(degree, bm);
             if (bm != null) {
                 bm.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(path)));
+                bm.recycle();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

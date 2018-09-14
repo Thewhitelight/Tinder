@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
                     .setHasCrop(true)
                     .imageFile { imageFile ->
                         run {
-                            Log.e("file:", imageFile.absolutePath)
+                            Log.e("MainActivity-file:", imageFile.absolutePath)
                             img.setImageBitmap(BitmapFactory.decodeFile(imageFile.absolutePath))
                         }
                     }
