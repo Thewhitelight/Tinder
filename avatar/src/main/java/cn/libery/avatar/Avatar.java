@@ -74,6 +74,13 @@ public class Avatar {
         context.startActivity(intent);
     }
 
+    /**
+     * 需要在onDestroy调用 否则可能会造成内存泄漏
+     */
+    public void clear() {
+        imageCallBack = null;
+    }
+
     public interface ImageCallBack {
         /**
          * 获取剪裁后图片文件
