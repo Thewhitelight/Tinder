@@ -23,7 +23,7 @@ import java.io.IOException;
 public class ImageUtil {
 
     private static final String SDCARD_MNT = "/mnt/sdcard";
-    public static String SD_PATH = Environment.getExternalStorageDirectory() + File.separator;
+    private static String SD_PATH = Environment.getExternalStorageDirectory() + File.separator;
 
     public static String getAbsImagePath(Activity context, Uri uri) {
         if (context == null || uri == null) {
@@ -49,7 +49,7 @@ public class ImageUtil {
         uriString = Uri.decode(uriString);
 
         String pre1 = "file://" + SD_PATH;
-        String pre2 = "file://" + SDCARD_MNT + File.separator;
+        String pre2 = "file://" + SDCARD_MNT;
 
         if (uriString.startsWith(pre1)) {
             filePath = SD_PATH + File.separator + uriString.substring(pre1.length());
