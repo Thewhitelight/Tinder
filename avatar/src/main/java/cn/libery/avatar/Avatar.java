@@ -27,7 +27,7 @@ public class Avatar {
         return AvatarHolder.INSTANCE;
     }
 
-    public static class AvatarHolder {
+    private static class AvatarHolder {
         static final Avatar INSTANCE = new Avatar();
     }
 
