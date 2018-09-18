@@ -82,6 +82,6 @@ class MainActivity : AppCompatActivity() {
         carousel.setOnItemClickListener { position ->
             Toast.makeText(this, banners[position].url, Toast.LENGTH_SHORT).show()
         }
+        slide.setOnClickListener { startActivity(Intent(this, SlideBackActivity::class.java)) }
     }
-
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SlideBackView">
+        <attr name="back_view_height" format="integer" />
+        <attr name="back_edge_width" format="integer" />
+        <attr name="back_max_width" format="integer" />
+    </declare-styleable>
+</resources>

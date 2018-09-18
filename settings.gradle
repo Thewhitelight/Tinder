@@ -1,1 +1,1 @@
-include ':app', ':avatar', ':badgeview', ':carousel', ':behavior'
+include ':app', ':avatar', ':badgeview', ':carousel', ':behavior', ':slideback'

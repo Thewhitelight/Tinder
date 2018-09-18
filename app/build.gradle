@@ -30,9 +30,10 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-     api project(path: ':avatar')
+    api project(path: ':avatar')
     api project(path: ':badgeview')
     api project(path: ':carousel')
     api project(path: ':behavior')
+    api project(path: ":slideback")
     //implementation 'cn.libery:avatar:1.1'
 }

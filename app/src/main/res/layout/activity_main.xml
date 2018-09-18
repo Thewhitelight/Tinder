@@ -38,4 +38,12 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/img2_layout" />
 
+    <TextView
+        android:id="@+id/slide"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="打开SlideBack"
+        app:layout_constraintTop_toBottomOf="@id/carousel" />
+
 </android.support.constraint.ConstraintLayout>
