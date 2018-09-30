@@ -16,6 +16,7 @@ import cn.libery.behavior.BehaviorActivity
 import cn.libery.carousel.model.Banner
 import cn.libery.carousel.model.Banner.IMAGE
 import cn.libery.carousel.model.Banner.VIDEO
+import cn.libery.slideback.SlideBack
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        SlideBack.init(this, R.layout.activity_main)
         img.setOnClickListener {
             Avatar.getInstance()
                     .setSelectMode(Avatar.ALL)
@@ -83,5 +84,10 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, banners[position].url, Toast.LENGTH_SHORT).show()
         }
         slide.setOnClickListener { startActivity(Intent(this, SlideBackActivity::class.java)) }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Avatar.getInstance().clear()
     }
 }

@@ -1,5 +1,6 @@
 package cn.libery.slideback;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -7,18 +8,18 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.FrameLayout;
 
 /**
  * @author shizhiqiang on 2018/9/18.
  * @description
  */
-public class SlideBackView extends ConstraintLayout {
+public class SlideBackView extends FrameLayout {
 
     public static final String TAG = "SlideBackView";
+
     /**
      * backView 高度
      */
@@ -27,16 +28,34 @@ public class SlideBackView extends ConstraintLayout {
      * 边缘触发距离
      */
     private float backEdgeWidth;
+    /**
+     * 最大返回触发距离
+     */
     private float backMaxWidth;
-    private Paint backPaint;
 
-    private Paint arrowPaint;
-    private Path backPath;
-    private Path arrowPath;
+
     private float y;
     private float downX;
     private boolean isEdge;
     private float deltaX;
+    private int width;
+    private int statusBarHeight = 0;
+    private boolean isOnlyLeftBack;
+
+    private Paint backPaint;
+    private Paint arrowPaint;
+    private Path backPath;
+    private Path arrowPath;
+
+    private OnBackListener onBackListener;
+
+    public void setOnBackListener(OnBackListener onBackListener) {
+        this.onBackListener = onBackListener;
+    }
+
+    public void setOnlyLeftBack(boolean onlyLeftBack) {
+        isOnlyLeftBack = onlyLeftBack;
+    }
 
     public SlideBackView(Context context) {
         this(context, null);
@@ -54,6 +73,10 @@ public class SlideBackView extends ConstraintLayout {
         backMaxWidth = array.getDimension(R.styleable.SlideBackView_back_max_width, getResources().getDimension(R.dimen.back_max_width));
         array.recycle();
         init();
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+        }
     }
 
     private void init() {
@@ -61,7 +84,7 @@ public class SlideBackView extends ConstraintLayout {
         arrowPath = new Path();
 
         backPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        backPaint.setColor(Color.BLACK);
+        backPaint.setColor(0xAA000000);
         backPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
         arrowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -71,35 +94,44 @@ public class SlideBackView extends ConstraintLayout {
         setWillNotDraw(false);
     }
 
+    boolean left = false, right = false;
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        float x = ev.getRawX();
-        y = ev.getRawY();
+        float x = ev.getX();
+        y = ev.getY();
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                downX = ev.getRawX();
+                downX = ev.getX();
                 if (x <= backEdgeWidth) {
                     isEdge = true;
+                    left = true;
                 } else if (x >= getWidth() - backEdgeWidth) {
                     isEdge = true;
+                    right = true;
                 }
-                Log.e(TAG, isEdge + " ACTION_DOWN " + x);
                 break;
             case MotionEvent.ACTION_MOVE:
                 deltaX = x - downX;
                 if (isEdge) {
-                    Log.e(TAG, " moveX " + deltaX);
                     invalidate();
                 }
-                Log.e(TAG, isEdge + " ACTION_MOVE " + x);
                 break;
             case MotionEvent.ACTION_UP:
                 if (isEdge) {
                     deltaX = 0;
                     invalidate();
+                    if (x > backMaxWidth && left) {
+                        back();
+                    } else if (x < getWidth() - backMaxWidth && right) {
+                        if (!isOnlyLeftBack) {
+                            back();
+                        }
+                    }
                 }
+                left = false;
+                right = false;
                 isEdge = false;
-                Log.e(TAG, isEdge + " ACTION_UP " + x);
                 break;
             default:
                 break;
@@ -107,9 +139,23 @@ public class SlideBackView extends ConstraintLayout {
         return isEdge;
     }
 
+    private void back() {
+        if (onBackListener != null) {
+            onBackListener.onBack();
+        } else {
+            ((Activity) getContext()).finish();
+        }
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        width = MeasureSpec.getSize(widthMeasureSpec) + 1;
     }
 
     @Override
@@ -120,7 +166,7 @@ public class SlideBackView extends ConstraintLayout {
         } else if (deltaX < -backMaxWidth) {
             deltaX = -backMaxWidth;
         }
-        float deltaY = y - backViewHeight;
+        float deltaY = y - backViewHeight / 2;
         backPath.reset();
         if (deltaX > 0) {
             backPath.moveTo(0, deltaY);
@@ -135,24 +181,51 @@ public class SlideBackView extends ConstraintLayout {
             arrowPath.moveTo(deltaX / 6, backViewHeight * 15.9f / 32 + deltaY);
             arrowPath.lineTo(deltaX / 6 + (15 * (deltaX / (1080 / 6))), backViewHeight * 17 / 32 + deltaY);
             canvas.drawPath(arrowPath, arrowPaint);
-
         } else {
-            deltaX = Math.abs(deltaX);
-            backPath.moveTo(1081, deltaY);
-            backPath.quadTo(1081, backViewHeight / 4 + deltaY, 1081 - deltaX / 3, backViewHeight * 3 / 8 + deltaY);
-            backPath.quadTo(1081 - deltaX * 5 / 8, backViewHeight / 2 + deltaY, 1081 - deltaX / 3, backViewHeight * 5 / 8 + deltaY);
-            backPath.quadTo(1081, backViewHeight * 6 / 8 + deltaY, 1081, backViewHeight + deltaY);
-            canvas.drawPath(backPath, backPaint);
+            if (!isOnlyLeftBack) {
+                deltaX = Math.abs(deltaX);
+                backPath.moveTo(width, deltaY);
+                backPath.quadTo(width, backViewHeight / 4 + deltaY, width - deltaX / 3, backViewHeight * 3 / 8 + deltaY);
+                backPath.quadTo(width - deltaX * 5 / 8, backViewHeight / 2 + deltaY, width - deltaX / 3, backViewHeight * 5 / 8 + deltaY);
+                backPath.quadTo(width, backViewHeight * 6 / 8 + deltaY, width, backViewHeight + deltaY);
+                canvas.drawPath(backPath, backPaint);
 
-            arrowPath.reset();
-            arrowPath.moveTo(1080 - deltaX / 6 - (15 * (deltaX / (1080 / 6))), backViewHeight * 15 / 32 + deltaY);
-            arrowPath.lineTo(1080 - deltaX / 6, backViewHeight * 16.1f / 32 + deltaY);
-            arrowPath.moveTo(1080 - deltaX / 6, backViewHeight * 15.9f / 32 + deltaY);
-            arrowPath.lineTo(1080 - deltaX / 6 - (15 * (deltaX / (1080 / 6))), backViewHeight * 17 / 32 + deltaY);
-            canvas.drawPath(arrowPath, arrowPaint);
+                arrowPath.reset();
+                arrowPath.moveTo(width - deltaX / 6 - (15 * (deltaX / (width / 6))), backViewHeight * 15 / 32 + deltaY);
+                arrowPath.lineTo(width - deltaX / 6, backViewHeight * 16.1f / 32 + deltaY);
+                arrowPath.moveTo(width - deltaX / 6, backViewHeight * 15.9f / 32 + deltaY);
+                arrowPath.lineTo(width - deltaX / 6 - (15 * (deltaX / (width / 6))), backViewHeight * 17 / 32 + deltaY);
+                canvas.drawPath(arrowPath, arrowPaint);
+            }
         }
-
         setAlpha(deltaX / backMaxWidth);
     }
 
+    public void setBackViewHeight(float backViewHeight) {
+        this.backViewHeight = backViewHeight;
+    }
+
+    public void setBackEdgeWidth(float backEdgeWidth) {
+        this.backEdgeWidth = backEdgeWidth;
+    }
+
+    public void setBackMaxWidth(float backMaxWidth) {
+        this.backMaxWidth = backMaxWidth;
+    }
+
+    public float getBackEdgeWidth() {
+        return backEdgeWidth;
+    }
+
+    public float getBackMaxWidth() {
+        return backMaxWidth;
+    }
+
+    public float getBackViewHeight() {
+        return backViewHeight;
+    }
+
+    public interface OnBackListener {
+        void onBack();
+    }
 }

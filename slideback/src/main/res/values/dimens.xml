@@ -2,5 +2,6 @@
 <resources>
     <dimen name="back_view_height">200dp</dimen>
     <dimen name="back_edge_width">10dp</dimen>
-    <dimen name="back_max_width">40dp</dimen>
+    <dimen name="back_max_width">50dp</dimen>
+    <dimen name="status_height">24dp</dimen>
 </resources>
