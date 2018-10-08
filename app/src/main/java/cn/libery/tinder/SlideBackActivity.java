@@ -17,6 +17,7 @@ public class SlideBackActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         new SlideBack.Builder().init(R.layout.activity_slideback)
                 .setOnlyLeftBack(true)
+                .setBackEdgeWidth(60)
                 .build(this);
     }
 

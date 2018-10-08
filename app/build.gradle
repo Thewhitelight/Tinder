@@ -30,14 +30,17 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    api project(path: ':avatar')
+    //api project(path: ':avatar')
     api project(path: ':badgeview')
-    api project(path: ':carousel')
+    //api project(path: ':carousel')
     api project(path: ':behavior')
     api project(path: ":slideback")
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
     // Optional, if you use support library fragments:
     debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
-    //implementation 'cn.libery:avatar:1.1.4'
+    implementation 'cn.libery:avatar:1.1.4'
+    //implementation 'cn.libery:slideback:1.0.3'
+    implementation 'cn.libery:carousel:0.9'
+    //implementation 'cn.libery:badgeview:0.9'
 }

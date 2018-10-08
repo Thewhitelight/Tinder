@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
@@ -39,7 +40,6 @@ public class SlideBackView extends FrameLayout {
     private boolean isEdge;
     private float deltaX;
     private int width;
-    private int statusBarHeight = 0;
     private boolean isOnlyLeftBack;
 
     private Paint backPaint;
@@ -73,10 +73,6 @@ public class SlideBackView extends FrameLayout {
         backMaxWidth = array.getDimension(R.styleable.SlideBackView_back_max_width, getResources().getDimension(R.dimen.back_max_width));
         array.recycle();
         init();
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
-        }
     }
 
     private void init() {
@@ -102,6 +98,7 @@ public class SlideBackView extends FrameLayout {
         y = ev.getY();
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                Log.e("onTouchEvent", "DOWN");
                 downX = ev.getX();
                 if (x <= backEdgeWidth) {
                     isEdge = true;
@@ -112,12 +109,14 @@ public class SlideBackView extends FrameLayout {
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
+                Log.e("onTouchEvent", "MOVE");
                 deltaX = x - downX;
                 if (isEdge) {
                     invalidate();
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                Log.e("onTouchEvent", "UP");
                 if (isEdge) {
                     deltaX = 0;
                     invalidate();
@@ -143,7 +142,7 @@ public class SlideBackView extends FrameLayout {
         if (onBackListener != null) {
             onBackListener.onBack();
         } else {
-            ((Activity) getContext()).finish();
+            ((Activity) getContext()).onBackPressed();
         }
     }
 
@@ -168,6 +167,7 @@ public class SlideBackView extends FrameLayout {
         }
         float deltaY = y - backViewHeight / 2;
         backPath.reset();
+        arrowPath.reset();
         if (deltaX > 0) {
             backPath.moveTo(0, deltaY);
             backPath.quadTo(0, backViewHeight / 4 + deltaY, deltaX / 3, backViewHeight * 3 / 8 + deltaY);
@@ -175,11 +175,10 @@ public class SlideBackView extends FrameLayout {
             backPath.quadTo(0, backViewHeight * 6 / 8 + deltaY, 0, backViewHeight + deltaY);
             canvas.drawPath(backPath, backPaint);
 
-            arrowPath.reset();
-            arrowPath.moveTo(deltaX / 6 + (15 * (deltaX / (1080 / 6))), backViewHeight * 15 / 32 + deltaY);
+            arrowPath.moveTo(deltaX / 6 + (15 * (deltaX / (width / 6))), backViewHeight * 15 / 32 + deltaY);
             arrowPath.lineTo(deltaX / 6, backViewHeight * 16.1f / 32 + deltaY);
             arrowPath.moveTo(deltaX / 6, backViewHeight * 15.9f / 32 + deltaY);
-            arrowPath.lineTo(deltaX / 6 + (15 * (deltaX / (1080 / 6))), backViewHeight * 17 / 32 + deltaY);
+            arrowPath.lineTo(deltaX / 6 + (15 * (deltaX / (width / 6))), backViewHeight * 17 / 32 + deltaY);
             canvas.drawPath(arrowPath, arrowPaint);
         } else {
             if (!isOnlyLeftBack) {
@@ -190,7 +189,6 @@ public class SlideBackView extends FrameLayout {
                 backPath.quadTo(width, backViewHeight * 6 / 8 + deltaY, width, backViewHeight + deltaY);
                 canvas.drawPath(backPath, backPaint);
 
-                arrowPath.reset();
                 arrowPath.moveTo(width - deltaX / 6 - (15 * (deltaX / (width / 6))), backViewHeight * 15 / 32 + deltaY);
                 arrowPath.lineTo(width - deltaX / 6, backViewHeight * 16.1f / 32 + deltaY);
                 arrowPath.moveTo(width - deltaX / 6, backViewHeight * 15.9f / 32 + deltaY);
