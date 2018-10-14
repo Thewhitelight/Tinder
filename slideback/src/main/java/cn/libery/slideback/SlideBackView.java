@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -99,6 +100,7 @@ public class SlideBackView extends View {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 downX = ev.getX();
+                nextX = downX;
                 if (downX <= backEdgeWidth) {
                     isEdge = true;
                     left = true;
@@ -191,10 +193,11 @@ public class SlideBackView extends View {
         } else if (deltaX < -backMaxWidth && right) {
             deltaX = -backMaxWidth;
         }
+        Log.e("onDraw", "" + deltaX);
         float deltaY = currentY - backViewHeight / 2;
         backPath.reset();
         arrowPath.reset();
-        if (deltaX > 0) {
+        if (deltaX > 0 && left) {
             backPath.moveTo(0, deltaY);
             backPath.quadTo(0, backViewHeight / 4 + deltaY, deltaX / 3, backViewHeight * 3 / 8 + deltaY);
             backPath.quadTo(deltaX * 5 / 8, backViewHeight / 2 + deltaY, deltaX / 3, backViewHeight * 5 / 8 + deltaY);
@@ -206,7 +209,7 @@ public class SlideBackView extends View {
             arrowPath.moveTo(deltaX / 6, backViewHeight * 15.9f / 32 + deltaY);
             arrowPath.lineTo(deltaX / 6 + (15 * (deltaX / (width / 6))), backViewHeight * 17 / 32 + deltaY);
             canvas.drawPath(arrowPath, arrowPaint);
-        } else {
+        } else if (deltaX < 0 && right) {
             if (!isOnlyLeftBack) {
                 deltaX = Math.abs(deltaX);
                 backPath.moveTo(width, deltaY);
