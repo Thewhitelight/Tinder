@@ -11,20 +11,6 @@ import android.widget.FrameLayout;
  */
 public class SlideBack {
 
-    public static void init(Activity activity, @LayoutRes int layoutResID) {
-        if (activity == null) {
-            return;
-        }
-        if (layoutResID == 0) {
-            throw new NullPointerException("must invoke Builder.setContentView(int layoutResID)");
-        }
-        SlideBackView slideBackView = new SlideBackView(activity);
-        activity.setContentView(layoutResID);
-        ViewGroup viewGroup = (ViewGroup) activity.getWindow().getDecorView();
-        FrameLayout content = viewGroup.findViewById(android.R.id.content);
-        content.addView(slideBackView);
-    }
-
     public static class Builder {
 
         private int layoutResID;
@@ -69,7 +55,7 @@ public class SlideBack {
                 return;
             }
             if (layoutResID == 0) {
-                throw new NullPointerException("must invoke Builder.setContentView(int layoutResID)");
+                return;
             }
             SlideBackView slideBackView = new SlideBackView(activity);
             if (backEdgeWidth != 0) {

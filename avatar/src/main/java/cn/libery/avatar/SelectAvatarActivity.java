@@ -50,6 +50,9 @@ public class SelectAvatarActivity extends Activity {
     private String imgPath;
     private File mAvatarFile;
     private Uri mOrigUri;
+    private int height = 500;
+    private int width = 500;
+    private int aspectX = 1, aspectY = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,6 +71,10 @@ public class SelectAvatarActivity extends Activity {
         String fileDir = intent.getStringExtra("img_dir");
         int selectMode = intent.getIntExtra("select_mode", 0);
         hasCrop = intent.getBooleanExtra("has_crop", false);
+        height = intent.getIntExtra("height", 500);
+        width = intent.getIntExtra("width", 500);
+        aspectX = intent.getIntExtra("aspectX", 1);
+        aspectY = intent.getIntExtra("aspectY", 1);
 
         if (TextUtils.isEmpty(fileDir)) {
             fileDir = packageName;
@@ -239,12 +246,17 @@ public class SelectAvatarActivity extends Activity {
         intent.setDataAndType(uri, "image/*");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, getTempUri(uri));
         intent.putExtra("crop", "true");
-        // 裁剪框比例
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
+        String huawei = "HUAWEI";
+        if (android.os.Build.MODEL.contains(huawei) || Build.MANUFACTURER.equals(huawei)) {
+            intent.putExtra("aspectX", 9998);
+            intent.putExtra("aspectY", 9999);
+        } else {
+            intent.putExtra("aspectX", aspectX);
+            intent.putExtra("aspectY", aspectY);
+        }
         // 输出图片大小
-        intent.putExtra("outputX", 500);
-        intent.putExtra("outputY", 500);
+        intent.putExtra("outputX", height);
+        intent.putExtra("outputY", width);
         // 去黑边
         intent.putExtra("scale", true);
         // 去黑边

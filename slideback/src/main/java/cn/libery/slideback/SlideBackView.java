@@ -9,17 +9,15 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.FrameLayout;
+import android.view.View;
 
 /**
  * @author shizhiqiang on 2018/9/18.
  * @description
  */
-public class SlideBackView extends FrameLayout {
+public class SlideBackView extends View {
 
-    public static final String TAG = "SlideBackView";
 
     /**
      * backView 高度
@@ -34,13 +32,18 @@ public class SlideBackView extends FrameLayout {
      */
     private float backMaxWidth;
 
+    private float thresholdLeft;
+    private float thresholdRight;
 
-    private float y;
+    private float currentY;
     private float downX;
     private boolean isEdge;
     private float deltaX;
     private int width;
     private boolean isOnlyLeftBack;
+    boolean left = false, right = false;
+    float nextX;
+    float bufferX;
 
     private Paint backPaint;
     private Paint arrowPaint;
@@ -87,50 +90,76 @@ public class SlideBackView extends FrameLayout {
         arrowPaint.setColor(Color.WHITE);
         arrowPaint.setStyle(Paint.Style.STROKE);
         arrowPaint.setStrokeWidth(6);
-        setWillNotDraw(false);
     }
-
-    boolean left = false, right = false;
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        float x = ev.getX();
-        y = ev.getY();
+        float currentX = ev.getX();
+        currentY = ev.getY();
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.e("onTouchEvent", "DOWN");
                 downX = ev.getX();
-                if (x <= backEdgeWidth) {
+                if (downX <= backEdgeWidth) {
                     isEdge = true;
                     left = true;
-                } else if (x >= getWidth() - backEdgeWidth) {
+                    right = false;
+                } else if (downX >= getWidth() - backEdgeWidth) {
                     isEdge = true;
                     right = true;
+                    left = false;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.e("onTouchEvent", "MOVE");
-                deltaX = x - downX;
+                deltaX = currentX - downX;
+                float diff = nextX - currentX;
+                if (diff > 0) {
+                    if (currentX < thresholdLeft && left) {
+                        deltaX = backMaxWidth;
+                        deltaX -= (thresholdLeft - currentX) / 2;
+                        bufferX = deltaX;
+                        if (deltaX < 0) {
+                            deltaX = 0;
+                            bufferX = 0;
+                        }
+                    } else if ((currentX > thresholdRight) && right) {
+                        bufferX -= diff;
+                        deltaX = bufferX;
+                    }
+                } else {
+                    if ((currentX < thresholdLeft) && left) {
+                        bufferX += Math.abs(diff);
+                        deltaX = bufferX;
+                    } else if (currentX > thresholdRight && right) {
+                        deltaX = -backMaxWidth;
+                        deltaX += (currentX - thresholdRight) / 2;
+                        bufferX = deltaX;
+                        if (deltaX < -backMaxWidth) {
+                            deltaX = -backMaxWidth;
+                            bufferX = -backMaxWidth;
+                        }
+                    }
+                }
+                nextX = currentX;
                 if (isEdge) {
                     invalidate();
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Log.e("onTouchEvent", "UP");
                 if (isEdge) {
-                    deltaX = 0;
-                    invalidate();
-                    if (x > backMaxWidth && left) {
+                    if (deltaX >= backMaxWidth && left) {
                         back();
-                    } else if (x < getWidth() - backMaxWidth && right) {
+                    } else if (Math.abs(deltaX) >= backMaxWidth && right) {
                         if (!isOnlyLeftBack) {
                             back();
                         }
                     }
+                    deltaX = 0;
+                    invalidate();
                 }
                 left = false;
                 right = false;
                 isEdge = false;
+                bufferX = 0;
                 break;
             default:
                 break;
@@ -147,25 +176,22 @@ public class SlideBackView extends FrameLayout {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-    }
-
-    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         width = MeasureSpec.getSize(widthMeasureSpec) + 1;
+        thresholdLeft = width / 3;
+        thresholdRight = thresholdLeft * 2;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (deltaX > backMaxWidth) {
+        if (deltaX > backMaxWidth && left) {
             deltaX = backMaxWidth;
-        } else if (deltaX < -backMaxWidth) {
+        } else if (deltaX < -backMaxWidth && right) {
             deltaX = -backMaxWidth;
         }
-        float deltaY = y - backViewHeight / 2;
+        float deltaY = currentY - backViewHeight / 2;
         backPath.reset();
         arrowPath.reset();
         if (deltaX > 0) {

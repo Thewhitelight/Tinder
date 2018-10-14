@@ -25,12 +25,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SlideBack.init(this, R.layout.activity_main)
+        SlideBack.Builder().init(R.layout.activity_main).build(this)
         img.setOnClickListener {
             Avatar.getInstance()
                     .setSelectMode(Avatar.ALL)
                     .setImageFileDir("Tinder")
                     .setHasCrop(true)
+                    .setImageSize(500, 500)
+                    .setAspectSize(1, 1)
                     .imageFile { imageFile ->
                         run {
                             Log.e("MainActivity-file:", imageFile.absolutePath)

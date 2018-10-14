@@ -19,6 +19,8 @@ public class Avatar {
     private String imageDir;
     private ImageCallBack imageCallBack;
     private boolean hasCrop;
+    private int width, height;
+    private int aspectX, aspectY;
 
     private Avatar() {
     }
@@ -61,6 +63,31 @@ public class Avatar {
         return this;
     }
 
+    /**
+     * 剪裁后输出图片尺寸
+     *
+     * @param width  剪裁后输出图片宽度
+     * @param height 剪裁后输出图片高度
+     */
+    public Avatar setImageSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+        return this;
+    }
+
+    /**
+     * 剪裁框比例
+     *
+     * @param aspectX 剪裁框X
+     * @param aspectY 剪裁框Y
+     */
+    public Avatar setAspectSize(int aspectX, int aspectY) {
+        this.aspectX = aspectX;
+        this.aspectY = aspectY;
+        return this;
+    }
+
+
     void setImageFile(File imageFile) {
         imageCallBack.getImageFile(imageFile);
     }
@@ -71,6 +98,10 @@ public class Avatar {
         intent.putExtra("select_mode", selectedMode);
         intent.putExtra("img_dir", imageDir);
         intent.putExtra("has_crop", hasCrop);
+        intent.putExtra("width", width);
+        intent.putExtra("height", height);
+        intent.putExtra("aspectX", aspectX);
+        intent.putExtra("aspectY", aspectY);
         context.startActivity(intent);
     }
 
