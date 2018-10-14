@@ -43,7 +43,7 @@ public class SlideBackView extends View {
     private int width;
     private boolean isOnlyLeftBack;
     boolean left = false, right = false;
-    float nextX;
+    float forwardX;
     float bufferX;
 
     private Paint backPaint;
@@ -100,7 +100,7 @@ public class SlideBackView extends View {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 downX = ev.getX();
-                nextX = downX;
+                forwardX = downX;
                 if (downX <= backEdgeWidth) {
                     isEdge = true;
                     left = true;
@@ -113,7 +113,7 @@ public class SlideBackView extends View {
                 break;
             case MotionEvent.ACTION_MOVE:
                 deltaX = currentX - downX;
-                float diff = nextX - currentX;
+                float diff = forwardX - currentX;
                 if (diff > 0) {
                     if (currentX < thresholdLeft && left) {
                         deltaX = backMaxWidth;
@@ -141,7 +141,7 @@ public class SlideBackView extends View {
                         }
                     }
                 }
-                nextX = currentX;
+                forwardX = currentX;
                 if (isEdge) {
                     invalidate();
                 }

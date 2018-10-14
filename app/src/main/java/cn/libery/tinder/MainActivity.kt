@@ -67,10 +67,8 @@ class MainActivity : AppCompatActivity() {
         banners.add(Banner(VIDEO, "http://img.soogif.com/HkkOHvJc0bSj10yemFqUfe3rcf8B628o.mp4"))
         banners.add(Banner(IMAGE, "http://n.sinaimg.cn/tech/transform/529/w284h245/20180822/t3QG-fzrwica1378454.gif"))
         banners.add(Banner(VIDEO, "http://f.us.sinaimg.cn/000XduoYlx07n2fcfO1G010402001PpW0k010.mp4?label=mp4_720p&template=1280x720.28&Expires=1534949695&ssig=bxZduauD09&KID=unistore,video"))
-        val txt = TextView(this)
-        txt.text = "Text"
-        txt.gravity = Gravity.CENTER
-        banners.add(Banner(txt))
+
+        banners.add(Banner(layoutInflater.inflate(R.layout.layout_item_text, null)))
         carousel.banners = banners
         carousel.delaySecond = 7
 
