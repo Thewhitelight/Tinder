@@ -146,7 +146,7 @@ public class ImageUtil {
             Bitmap bm = BitmapFactory.decodeFile(path);
             bm = rotateImageView(degree, bm);
             if (bm != null) {
-                bm.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(path)));
+                bm.compress(Bitmap.CompressFormat.PNG, 90, new FileOutputStream(new File(path)));
                 bm.recycle();
             }
         } catch (FileNotFoundException e) {

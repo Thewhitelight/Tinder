@@ -3,12 +3,14 @@ package cn.libery.avatar;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -242,34 +244,7 @@ public class SelectAvatarActivity extends Activity {
      * @param uri 原始图片
      */
     private void startActionCrop(Uri uri) {
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, getTempUri(uri));
-        intent.putExtra("crop", "true");
-        String huawei = "HUAWEI";
-        if (android.os.Build.MODEL.contains(huawei) || Build.MANUFACTURER.equals(huawei)) {
-            intent.putExtra("aspectX", 9998);
-            intent.putExtra("aspectY", 9999);
-        } else {
-            intent.putExtra("aspectX", aspectX);
-            intent.putExtra("aspectY", aspectY);
-        }
-        // 输出图片大小
-        intent.putExtra("outputX", height);
-        intent.putExtra("outputY", width);
-        // 去黑边
-        intent.putExtra("scale", true);
-        // 去黑边
-        intent.putExtra("scaleUpIfNeeded", true);
-        // 是否将数据保留在Bitmap中返回
-        intent.putExtra("return-data", false);
-        // 圆形裁剪区域
-        intent.putExtra("circleCrop", false);
-        // 不检测人脸
-        intent.putExtra("noFaceDetection", false);
-        intent.putExtra("outputFormat", Bitmap.CompressFormat.PNG.toString());
-
-        startActivityForResult(intent, REQUEST_CODE_GET_IMAGE_CROP);
+        new ClipImageTask().execute(uri);
     }
 
     /**
@@ -319,9 +294,8 @@ public class SelectAvatarActivity extends Activity {
                     startActionCrop(mOrigUri);
                 } else {
                     String path = ImageUtil.getAbsImagePath(this, mOrigUri);
-                    ImageUtil.compressHeadPhoto(path);
-                    Avatar.getInstance().setImageFile(new File(path));
-                    finish();
+                    ProgressImageTask task = new ProgressImageTask();
+                    task.execute(path);
                 }
                 break;
             // 选照片后裁剪
@@ -344,6 +318,99 @@ public class SelectAvatarActivity extends Activity {
                 finish();
                 break;
             default:
+        }
+    }
+
+    public class ProgressImageTask extends AsyncTask<String, Void, Void> {
+
+        ProgressDialog dialog;
+        private String path;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(SelectAvatarActivity.this);
+            dialog.setMessage("请稍候...");
+            dialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            path = strings[0];
+            ImageUtil.compressHeadPhoto(path);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            dialog.dismiss();
+            Avatar.getInstance().setImageFile(new File(path));
+            finish();
+        }
+    }
+
+
+    public class ClipImageTask extends AsyncTask<Uri, Void, Void> {
+
+        ProgressDialog dialog;
+        Intent intent;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(SelectAvatarActivity.this);
+            dialog.setMessage("请稍候...");
+            dialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Uri... uris) {
+            Uri uri = uris[0];
+            intent = new Intent("com.android.camera.action.CROP");
+            intent.setDataAndType(uri, "image/*");
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, getTempUri(uri));
+            intent.putExtra("crop", "true");
+            String huawei = "HUAWEI";
+            if (android.os.Build.MODEL.contains(huawei) || Build.MANUFACTURER.equals(huawei)) {
+                intent.putExtra("aspectX", 9998);
+                intent.putExtra("aspectY", 9999);
+            } else {
+                intent.putExtra("aspectX", aspectX);
+                intent.putExtra("aspectY", aspectY);
+            }
+            // 输出图片大小
+            intent.putExtra("outputX", height);
+            intent.putExtra("outputY", width);
+            // 去黑边
+            intent.putExtra("scale", true);
+            // 去黑边
+            intent.putExtra("scaleUpIfNeeded", true);
+            // 是否将数据保留在Bitmap中返回
+            intent.putExtra("return-data", false);
+            // 圆形裁剪区域
+            intent.putExtra("circleCrop", false);
+            // 不检测人脸
+            intent.putExtra("noFaceDetection", false);
+            intent.putExtra("outputFormat", Bitmap.CompressFormat.PNG.toString());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            dialog.dismiss();
+            startActivityForResult(intent, REQUEST_CODE_GET_IMAGE_CROP);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onCancelled(Void aVoid) {
+            super.onCancelled(aVoid);
         }
     }
 

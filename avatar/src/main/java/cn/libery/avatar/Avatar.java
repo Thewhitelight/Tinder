@@ -1,5 +1,8 @@
 package cn.libery.avatar;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.IntDef;
@@ -12,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
  * @author shizhiqiang on 2018/7/31.
  * @description
  */
-public class Avatar {
+public class Avatar implements LifecycleObserver {
 
     public static final String PACKAGE_NAME = "package_name";
     private int selectedMode;
@@ -134,5 +137,10 @@ public class Avatar {
     }
 
     //endregion
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    public void stop() {
+        clear();
+    }
 
 }
