@@ -20,6 +20,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -55,6 +56,7 @@ public class SelectAvatarActivity extends Activity {
     private int height = 500;
     private int width = 500;
     private int aspectX = 1, aspectY = 1;
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,7 +110,16 @@ public class SelectAvatarActivity extends Activity {
             }
         });
         builder.setCancelable(false);
-        builder.show();
+        alertDialog = builder.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+            alertDialog = null;
+        }
     }
 
     private void selectAvatar(int witch) {
@@ -213,7 +224,7 @@ public class SelectAvatarActivity extends Activity {
             return;
         }
         String timestamp = AppUtil.yyyyMMddHHmmss(System.currentTimeMillis());
-        String cameraPath = "camera_" + timestamp + ".png";
+        String cameraPath = "camera_" + timestamp + ".jpg";
         File cameraFile = new File(savePath, cameraPath);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -265,7 +276,7 @@ public class SelectAvatarActivity extends Activity {
             ImageUtil.compressHeadPhoto(thePath);
         }
         String ext = ImageUtil.getFileFormat(thePath);
-        ext = TextUtils.isEmpty(ext) ? "png" : ext;
+        ext = TextUtils.isEmpty(ext) ? "jpg" : ext;
         // 照片命名
         String timeStamp = AppUtil.yyyyMMddHHmmss(System.currentTimeMillis());
         String cropFileName = "crop_" + timeStamp + "." + ext;
@@ -284,6 +295,28 @@ public class SelectAvatarActivity extends Activity {
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) {
+            switch (requestCode) {
+                // 拍照后裁剪
+                case REQUEST_CODE_GET_IMAGE_CAMERA: {
+                    String path = ImageUtil.getAbsImagePath(this, mOrigUri);
+                    try {
+                        deleteImageFile(path);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+                case REQUEST_CODE_GET_IMAGE_CROP:
+                    if (mAvatarFile != null) {
+                        try {
+                            deleteImageFile(mAvatarFile);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                default:
+            }
             finish();
             return;
         }
@@ -321,10 +354,30 @@ public class SelectAvatarActivity extends Activity {
         }
     }
 
+    private void deleteImageFile(File file) {
+        if (file.delete()) {
+            Log.e(file.getAbsolutePath(), " 文件已被删除！");
+        } else {
+            Log.e(file.getAbsolutePath(), "文件删除失败！");
+        }
+    }
+
+    private void deleteImageFile(String filePath) {
+        File file = new File(filePath);
+        deleteImageFile(file);
+    }
+
     public class ProgressImageTask extends AsyncTask<String, Void, Void> {
 
         ProgressDialog dialog;
         private String path;
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            path = strings[0];
+            path = ImageUtil.compressHeadPhoto(path);
+            return null;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -335,17 +388,12 @@ public class SelectAvatarActivity extends Activity {
         }
 
         @Override
-        protected Void doInBackground(String... strings) {
-            path = strings[0];
-            ImageUtil.compressHeadPhoto(path);
-            return null;
-        }
-
-        @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             dialog.dismiss();
-            Avatar.getInstance().setImageFile(new File(path));
+            if (!TextUtils.isEmpty(path)) {
+                Avatar.getInstance().setImageFile(new File(path));
+            }
             finish();
         }
     }
@@ -392,7 +440,7 @@ public class SelectAvatarActivity extends Activity {
             intent.putExtra("circleCrop", false);
             // 不检测人脸
             intent.putExtra("noFaceDetection", false);
-            intent.putExtra("outputFormat", Bitmap.CompressFormat.PNG.toString());
+            intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
             return null;
         }
 

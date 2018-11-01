@@ -9,6 +9,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -98,8 +99,11 @@ public class ImageUtil {
     /**
      * 获取图片信息
      */
-    public static int readPictureDegree(String path) {
+    private static int readPictureDegree(String path) {
         int degree = 0;
+        if (TextUtils.isEmpty(path)) {
+            return degree;
+        }
         try {
             ExifInterface exifInterface = new ExifInterface(path);
             int orientation = exifInterface.getAttributeInt(
@@ -126,33 +130,36 @@ public class ImageUtil {
     /**
      * 图片旋转
      */
-    public static Bitmap rotateImageView(int angle, Bitmap bitmap) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        // 创建新的图片
-        if (bitmap != null) {
-            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        } else {
+    @Nullable
+    private static Bitmap rotateImageView(int angle, Bitmap bitmap) {
+        if (bitmap == null) {
             return null;
         }
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+        return bitmap;
     }
 
-    public static void compressHeadPhoto(String path) {
+    public static String compressHeadPhoto(String path) {
         try {
             int degree = readPictureDegree(path);
             if (degree == 0) {
-                return;
+                return path;
             }
-            Bitmap bm = BitmapFactory.decodeFile(path);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
+            Bitmap bm = BitmapFactory.decodeFile(path, options);
             bm = rotateImageView(degree, bm);
             if (bm != null) {
-                bm.compress(Bitmap.CompressFormat.PNG, 90, new FileOutputStream(new File(path)));
-                bm.recycle();
+                bm.compress(Bitmap.CompressFormat.JPEG, 90, new FileOutputStream(new File(path)));
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } finally {
         }
+        return path;
     }
 
     public static void generateFile(String filePath) {
