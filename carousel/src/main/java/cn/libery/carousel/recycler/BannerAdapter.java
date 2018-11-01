@@ -16,6 +16,7 @@ import java.util.List;
 import cn.libery.carousel.Carousel;
 import cn.libery.carousel.R;
 import cn.libery.carousel.model.Banner;
+import cn.libery.carousel.util.ViewUtil;
 import cn.libery.carousel.view.SampleVideo;
 
 import static cn.libery.carousel.model.Banner.CUSTOM;
@@ -59,9 +60,9 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerHold
     @Override
     public void onBindViewHolder(final @NonNull BannerHolder holder, int position) {
         Banner banner = banners.get(position % banners.size());
+        holder.contentView.removeAllViews();
         switch (banner.getType()) {
             case IMAGE:
-                holder.contentView.removeAllViews();
                 ImageView img = new ImageView(holder.itemView.getContext());
                 img.setScaleType(ImageView.ScaleType.FIT_XY);
                 Glide.with(holder.itemView.getContext())
@@ -70,7 +71,6 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerHold
                 holder.contentView.addView(img);
                 break;
             case VIDEO:
-                holder.contentView.removeAllViews();
                 SampleVideo video = new SampleVideo(holder.itemView.getContext());
                 video.setVideoUrlAndThumbUrl(banner.getUrl(), banner.getUrl());
                 video.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
@@ -97,7 +97,7 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerHold
                 holder.contentView.addView(video);
                 break;
             case CUSTOM:
-                holder.contentView.removeAllViews();
+                ViewUtil.removeViewFromParent(banner.getView());
                 holder.contentView.addView(banner.getView());
                 break;
             default:
@@ -111,6 +111,7 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerHold
             }
         });
     }
+
 
     @Override
     public int getItemCount() {

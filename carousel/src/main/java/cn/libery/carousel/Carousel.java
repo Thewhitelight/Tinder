@@ -9,9 +9,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import java.lang.ref.WeakReference;
@@ -162,8 +164,8 @@ public class Carousel extends FrameLayout {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
         if (heightMode == MeasureSpec.AT_MOST) {
-            int height = width / 16 * 9;
-            setMeasuredDimension(width, width / 16 * 9);
+            int height = (int) ((getScreenWith() / (getScreenHeight() * 1.0)) * width);
+            setMeasuredDimension(width, height);
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
             bannerRecycler.measure(widthMeasureSpec, heightMeasureSpec);
         }
@@ -234,6 +236,31 @@ public class Carousel extends FrameLayout {
 
     }
 
+    public int getScreenWith() {
+        Context context = getContext();
+        if (context == null) {
+            return 0;
+        }
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (wm != null) {
+            wm.getDefaultDisplay().getMetrics(dm);
+        }
+        return dm.widthPixels;
+    }
+
+    public int getScreenHeight() {
+        Context context = getContext();
+        if (context == null) {
+            return 0;
+        }
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (wm != null) {
+            wm.getDefaultDisplay().getMetrics(dm);
+        }
+        return dm.heightPixels;
+    }
 
     public interface OnScrollPositionListener {
         void onScrollPosition(int position);
