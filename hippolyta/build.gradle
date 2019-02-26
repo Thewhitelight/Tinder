@@ -1,0 +1,52 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        //指定room.schemaLocation生成的文件路径
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+def retrofit = "2.3.0"
+def rx_android = "2.1.0"
+def rx_java = "2.2.3"
+def okhttp = "3.9.0"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    api "com.squareup.retrofit2:retrofit:$retrofit"
+    api "com.squareup.retrofit2:converter-gson:$retrofit"
+    api "com.squareup.retrofit2:adapter-rxjava2:$retrofit"
+    api "com.squareup.okhttp3:logging-interceptor:$okhttp"
+
+    api "io.reactivex.rxjava2:rxandroid:$rx_android"
+    api "io.reactivex.rxjava2:rxjava:${rx_java}"
+
+    api "android.arch.work:work-runtime:1.0.0-rc02"
+
+    api 'android.arch.persistence.room:runtime:1.1.1'
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+
+}

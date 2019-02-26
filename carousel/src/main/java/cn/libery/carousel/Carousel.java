@@ -167,7 +167,9 @@ public class Carousel extends FrameLayout {
             int height = (int) ((getScreenWith() / (getScreenHeight() * 1.0)) * width);
             setMeasuredDimension(width, height);
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
-            bannerRecycler.measure(widthMeasureSpec, heightMeasureSpec);
+            if (bannerRecycler != null) {
+                bannerRecycler.measure(widthMeasureSpec, heightMeasureSpec);
+            }
         }
     }
 

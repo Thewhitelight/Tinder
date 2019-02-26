@@ -1,10 +1,13 @@
 package cn.libery.tinder
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Gravity
 import android.widget.FrameLayout
@@ -12,25 +15,30 @@ import android.widget.TextView
 import android.widget.Toast
 import cn.libery.avatar.Avatar
 import cn.libery.badgeview.BadgeView
-import cn.libery.behavior.BehaviorActivity
+import cn.libery.camera.CameraActivity
+import cn.libery.carousel.detail.ImageDetailActivity
 import cn.libery.carousel.model.Banner
 import cn.libery.carousel.model.Banner.IMAGE
 import cn.libery.carousel.model.Banner.VIDEO
 import cn.libery.slideback.SlideBack
+import cn.libery.tinder.classloader.HackActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : HackActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SlideBack.Builder().init(R.layout.activity_main).build(this)
+        SlideBack.Builder()
+                .init(R.layout.activity_main)
+                .build(this)
+        val avatar = Avatar.getInstance()
         img.setOnClickListener {
-            Avatar.getInstance()
+            avatar
                     .setSelectMode(Avatar.ALL)
                     .setImageFileDir("Tinder")
-                    .setHasCrop(true)
+                    .setHasCrop(false)
                     .setImageSize(500, 500)
                     .setAspectSize(1, 1)
                     .imageFile { imageFile ->
@@ -41,6 +49,13 @@ class MainActivity : AppCompatActivity() {
                     }
                     .build(this)
         }
+        lifecycle.addObserver(avatar)
+        val bitmap = drawableToBitmap(img0.drawable)
+        Log.e("img0:", (bitmap.byteCount / 1024 * 1.0 / 1024).toString())
+
+        val bitmap2 = drawableToBitmap(img.drawable)
+        Log.e("img2:", (bitmap2.byteCount / 1024 * 1.0 / 1024).toString())
+        img.setImageBitmap(bitmap2)
 
         val badge = BadgeView(this)
         badge.setDisplacement(BadgeView.dp2px(50), BadgeView.dp2px(10))
@@ -56,8 +71,12 @@ class MainActivity : AppCompatActivity() {
         badge3.text = "66"
         badge3.setBackgroundResource(R.drawable.ic_badge_2)
         val v = badge3.bindView(img2_layout)
-        v.setOnClickListener { _ ->
-            startActivity(Intent(this, BehaviorActivity::class.java))
+        image_id_card.setOnClickListener {
+            val intent = Intent(this, CameraActivity::class.java)
+            intent.putExtra("isTakeFront", true)
+            intent.putExtra("canCrop", true)
+            intent.putExtra("maxWidth", 1080)
+            startActivityForResult(intent, 1)
         }
 
         val banners = ArrayList<Banner>(6)
@@ -82,12 +101,31 @@ class MainActivity : AppCompatActivity() {
         carousel.setOnScrollPositionListener { position -> indicator.text = (position + 1).toString() + "/" + banners.size }
         carousel.setOnItemClickListener { position ->
             Toast.makeText(this, banners[position].url, Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, ImageDetailActivity::class.java)
+            intent.putExtra("url", banners[position].url)
+            startActivity(intent)
         }
         slide.setOnClickListener { startActivity(Intent(this, SlideBackActivity::class.java)) }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Avatar.getInstance().clear()
+    fun drawableToBitmap(drawable: Drawable): Bitmap {
+        if (drawable is BitmapDrawable) {
+            return drawable.bitmap
+        }
+        val bitmap = Bitmap.createBitmap(60, 60, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight())
+        drawable.draw(canvas)
+
+        return bitmap
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (data != null) {
+            val bitmap = BitmapFactory.decodeFile(data.getStringExtra("imagePath"))
+            Log.e("image size", "${bitmap.width} ${bitmap.height}")
+            image_id_card.setImageBitmap(bitmap)
+        }
     }
 }

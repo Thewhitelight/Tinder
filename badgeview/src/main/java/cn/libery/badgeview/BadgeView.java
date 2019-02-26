@@ -45,6 +45,12 @@ public class BadgeView extends TextView {
         setTop(y);
     }
 
+    /**
+     * 只需要调用一次
+     *
+     * @param targetView 需要绑定的View
+     * @return 包裹View
+     */
     public View bindView(View targetView) {
         if (targetView == null) {
             throw new IllegalArgumentException("targetView is null");
@@ -53,12 +59,12 @@ public class BadgeView extends TextView {
             ((ViewGroup) getParent()).removeView(this);
         }
         ViewParent viewParent = targetView.getParent();
-        if (viewParent != null && viewParent instanceof ViewGroup) {
+        if (viewParent instanceof ViewGroup) {
             ViewGroup targetContainer = (ViewGroup) viewParent;
             int index = targetContainer.indexOfChild(targetView);
             ViewGroup.LayoutParams targetParams = targetView.getLayoutParams();
             targetContainer.removeView(targetView);
-            BadgeContainer container = new BadgeContainer(getContext());
+            BadgeContainer container = new BadgeContainer(getContext(), this);
             if (targetContainer instanceof RelativeLayout || targetContainer instanceof ConstraintLayout) {
                 container.setId(targetView.getId());
             }
@@ -71,13 +77,16 @@ public class BadgeView extends TextView {
         }
     }
 
-    private class BadgeContainer extends ViewGroup {
+    private static class BadgeContainer extends ViewGroup {
 
         private int minWidth = dp2px(7);
         private int minHeight = dp2px(7);
 
-        public BadgeContainer(Context context) {
+        private BadgeView badgeView;
+
+        public BadgeContainer(Context context, BadgeView badgeView) {
             super(context);
+            this.badgeView = badgeView;
         }
 
         @Override
@@ -119,7 +128,7 @@ public class BadgeView extends TextView {
             for (int i = 0, size = getChildCount(); i < size; i++) {
                 View child = getChildAt(i);
                 if (child instanceof BadgeView) {
-                    child.layout(BadgeView.this.getLeft(), BadgeView.this.getTop(), child.getMeasuredWidth() + BadgeView.this.getLeft(), child.getMeasuredHeight() + BadgeView.this.getTop());
+                    child.layout(badgeView.getLeft(), badgeView.getTop(), child.getMeasuredWidth() + badgeView.getLeft(), child.getMeasuredHeight() + badgeView.getTop());
                 } else {
                     child.layout(0, 0, child.getMeasuredWidth(), child.getMeasuredHeight());
                 }

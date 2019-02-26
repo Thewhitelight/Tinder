@@ -79,4 +79,18 @@ class ExampleUnitTest {
         }
         return result
     }
+
+    @Test
+    fun lruTest() {
+        val lru = LruCache<Int, String>()
+        for (i in 0..99) {
+            lru[i] = "i$i"
+        }
+        println(lru.size)
+
+        for (entry in lru.entries) {
+            println("${entry.key} ${entry.value}")
+        }
+    }
+
 }

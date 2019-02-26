@@ -7,14 +7,25 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/img"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/ic_launcher_background"
+        android:id="@+id/img0"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_test"
         android:text="Hello World!"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/e2b2a183d1b48bcf2b12af45afdbc12"
+        android:text="Hello World!"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <FrameLayout
         android:id="@+id/img2_layout"
@@ -36,14 +47,31 @@
         android:id="@+id/carousel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/img2_layout" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/slide"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="40dp"
         android:gravity="center"
         android:text="打开SlideBack"
-        app:layout_constraintTop_toBottomOf="@id/carousel" />
+        app:layout_constraintTop_toBottomOf="@+id/carousel" />
 
+    <TextView
+        android:id="@+id/test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="lksajfdlkjaldsfjlajdsfl"
+        app:layout_constraintTop_toBottomOf="@id/slide" />
+
+    <ImageView
+        android:id="@+id/image_id_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/test" />
 </android.support.constraint.ConstraintLayout>

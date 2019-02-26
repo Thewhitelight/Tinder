@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="100dp">
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_gravity="center"

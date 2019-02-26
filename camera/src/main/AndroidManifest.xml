@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.libery.camera">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <application>
+        <activity
+            android:name=".CameraActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreenTheme" />
+    </application>
+</manifest>

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -52,6 +53,7 @@ public class ImageDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 GlideApp.with(getApplicationContext())
                         .asFile()
+                        .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .load(url)
                         .listener(new RequestListener<File>() {
                             @Override
