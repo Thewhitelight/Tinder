@@ -61,10 +61,8 @@ public final class CameraConfigurationManager {
         Camera.Parameters parameters = camera.getParameters();
         WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = manager.getDefaultDisplay();
-        Point theScreenResolution = new Point();
-        theScreenResolution = getDisplaySize(display);
 
-        screenResolution = theScreenResolution;
+        screenResolution = getDisplaySize(display);
         Log.i(TAG, "Screen resolution: " + screenResolution);
 
         /** 因为换成了竖屏显示，所以不替换屏幕宽高得出的预览图是变形的 */
@@ -110,7 +108,6 @@ public final class CameraConfigurationManager {
         }
 
         parameters.setPreviewSize(cameraResolution.x, cameraResolution.y);
-        camera.setParameters(parameters);
 
         Camera.Parameters afterParameters = camera.getParameters();
         Camera.Size afterSize = afterParameters.getPreviewSize();
@@ -120,10 +117,11 @@ public final class CameraConfigurationManager {
             cameraResolution.y = afterSize.height;
         }
 
+        //匹配与surface比例相近的照片尺寸，因为有的手机会返回过小的尺寸
         Point pictureSize = findBestPictureSizeValue(parameters, cameraResolution);
         parameters.setPictureSize(pictureSize.x, pictureSize.y);
         camera.setParameters(parameters);
-        /** 设置相机预览为竖屏 */
+        //设置相机预览为竖屏
         camera.setDisplayOrientation(90);
     }
 
@@ -135,7 +133,6 @@ public final class CameraConfigurationManager {
         return screenResolution;
     }
 
-
     /**
      * 从相片支持的分辨率中计算出最适合的照片尺寸
      *
@@ -144,14 +141,13 @@ public final class CameraConfigurationManager {
      * @return
      */
     Point findBestPictureSizeValue(Camera.Parameters parameters, Point screenResolution) {
-        List<Camera.Size> rawSupportedSizes = parameters.getSupportedPictureSizes();
-        if (rawSupportedSizes.isEmpty()) {
+        List<Camera.Size> pictureSupportedSizes = parameters.getSupportedPictureSizes();
+        if (pictureSupportedSizes.isEmpty()) {
             Log.w(TAG, "Device returned no supported preview sizes; using default");
             Camera.Size defaultSize = parameters.getPictureSize();
             return new Point(defaultSize.width, defaultSize.height);
         }
-        return machBestSize(parameters, screenResolution, rawSupportedSizes);
-
+        return machBestSize(parameters, screenResolution, pictureSupportedSizes);
     }
 
     /**
@@ -172,9 +168,9 @@ public final class CameraConfigurationManager {
     }
 
     @NonNull
-    private Point machBestSize(Camera.Parameters parameters, Point screenResolution, List<Camera.Size> rawSupportedSizes) {
+    private Point machBestSize(Camera.Parameters parameters, Point screenResolution, List<Camera.Size> supportedSizes) {
         // Sort by size, descending
-        List<Camera.Size> supportedPreviewSizes = new ArrayList<Camera.Size>(rawSupportedSizes);
+        List<Camera.Size> supportedPreviewSizes = new ArrayList<Camera.Size>(supportedSizes);
         Collections.sort(supportedPreviewSizes, new Comparator<Camera.Size>() {
             @Override
             public int compare(Camera.Size a, Camera.Size b) {

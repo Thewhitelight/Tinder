@@ -46,7 +46,6 @@ public class CameraManager {
 
     boolean initialized;
 
-
     int requestedCameraId = -1;
 
     public CameraManager(Context context) {

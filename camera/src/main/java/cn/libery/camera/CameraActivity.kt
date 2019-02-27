@@ -45,7 +45,7 @@ class CameraActivity : AppCompatActivity() {
         initData()
     }
 
-    fun initData() {
+    private fun initData() {
         initSurfaceView()
         isTakeFront = intent.getBooleanExtra("isTakeFront", false)
         canCrop = intent.getBooleanExtra("canCrop", false)
