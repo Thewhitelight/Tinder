@@ -46,6 +46,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun initData() {
+        take_photo.isEnabled = false
         initSurfaceView()
         isTakeFront = intent.getBooleanExtra("isTakeFront", false)
         canCrop = intent.getBooleanExtra("canCrop", false)
@@ -149,6 +150,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
+        take_photo.isEnabled = true
         cameraManager.openDriver(mSurfaceHolder)
         cameraManager.startPreview()
     }
