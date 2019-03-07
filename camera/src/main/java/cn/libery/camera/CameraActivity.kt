@@ -109,12 +109,17 @@ class CameraActivity : AppCompatActivity() {
         val pictureHeight = dp2px(282) * ratio
         val x = (resource.width - pictureWidth) / 2
         val y = (resource.height - pictureHeight) / 2
-        val bitmap = Bitmap.createBitmap(resource, x.toInt(), y.toInt(), pictureWidth.toInt(), pictureHeight.toInt())
-        if (pictureWidth > maxWidth) {
-            val originRatio = (pictureWidth / (pictureHeight * 1.0)).toFloat()
-            val matrix = Matrix()
-            matrix.postScale(originRatio, originRatio)
-            return Bitmap.createScaledBitmap(bitmap, maxWidth, (maxWidth / originRatio).toInt(), true)
+        val bitmap: Bitmap
+        if (x < 0 || y < 0) {
+            bitmap = resource
+        } else {
+            bitmap = Bitmap.createBitmap(resource, x.toInt(), y.toInt(), pictureWidth.toInt(), pictureHeight.toInt())
+            if (pictureWidth > 1280) {
+                val originRatio = (pictureWidth / (pictureHeight * 1.0)).toFloat()
+                val matrix = Matrix()
+                matrix.postScale(originRatio, originRatio)
+                return Bitmap.createScaledBitmap(bitmap, 1280, (1280 / originRatio).toInt(), true)
+            }
         }
         return bitmap
     }
