@@ -65,6 +65,7 @@ class CameraActivity : AppCompatActivity() {
     private fun takePhoto() {
         val camera = cameraManager.camera
         camera.takePicture(null, null, Camera.PictureCallback { data, _ ->
+            take_photo.isEnabled = true
             var resource = BitmapFactory.decodeByteArray(data, 0, data.size)
             if (resource == null) {
                 Toast.makeText(this@CameraActivity, "拍照失败", Toast.LENGTH_SHORT).show()
@@ -84,6 +85,7 @@ class CameraActivity : AppCompatActivity() {
                 finish()
             }
         })
+        take_photo.isEnabled = false
     }
 
     private fun saveBitmap(resource: Bitmap): String {
