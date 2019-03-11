@@ -65,13 +65,11 @@ class CameraActivity : AppCompatActivity() {
     private fun takePhoto() {
         val camera = cameraManager.camera
         camera.setOneShotPreviewCallback { data, _ ->
-            run {
-                val bitmap = generateBitmap(camera, data)
-                if (bitmap == null) {
-                    Toast.makeText(this@CameraActivity, "拍照失败", Toast.LENGTH_SHORT).show()
-                } else {
-                    cameraResult(bitmap)
-                }
+            val bitmap = generateBitmap(camera, data)
+            if (bitmap == null) {
+                Toast.makeText(this@CameraActivity, "拍照失败", Toast.LENGTH_SHORT).show()
+            } else {
+                cameraResult(bitmap)
             }
         }
     }
