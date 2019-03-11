@@ -6,9 +6,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
+import android.graphics.*
 import android.hardware.Camera
 import android.net.Uri
 import android.os.Bundle
@@ -21,8 +19,10 @@ import android.view.SurfaceHolder
 import android.widget.Toast
 import cn.libery.camera.camera.CameraManager
 import kotlinx.android.synthetic.main.activity_take_photo.*
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+
 
 /**
  * @author shizhiqiang on 2019/2/24.
@@ -46,7 +46,6 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun initData() {
-        take_photo.isEnabled = false
         initSurfaceView()
         isTakeFront = intent.getBooleanExtra("isTakeFront", false)
         canCrop = intent.getBooleanExtra("canCrop", false)
@@ -65,28 +64,47 @@ class CameraActivity : AppCompatActivity() {
 
     private fun takePhoto() {
         val camera = cameraManager.camera
-        camera.takePicture(null, null, Camera.PictureCallback { data, _ ->
-            take_photo.isEnabled = true
-            var resource = BitmapFactory.decodeByteArray(data, 0, data.size)
-            if (resource == null) {
-                Toast.makeText(this@CameraActivity, "拍照失败", Toast.LENGTH_SHORT).show()
-            } else {
-                if (canCrop) {
-                    resource = cropImage(resource)
-                }
-                val path = saveBitmap(resource)
-                if (path.isNotEmpty()) {
-                    Log.e("photo saved in path:", path)
+        camera.setOneShotPreviewCallback { data, _ ->
+            run {
+                val bitmap = generateBitmap(camera, data)
+                if (bitmap == null) {
+                    Toast.makeText(this@CameraActivity, "拍照失败", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this@CameraActivity, "照片保存失败", Toast.LENGTH_SHORT).show()
+                    cameraResult(bitmap)
                 }
-                val intent = Intent()
-                intent.putExtra("imagePath", path)
-                setResult(Activity.RESULT_OK, intent)
-                finish()
             }
-        })
-        take_photo.isEnabled = false
+        }
+    }
+
+    private fun cameraResult(bitmap: Bitmap) {
+        var resource = bitmap
+        if (canCrop) {
+            resource = cropImage(resource)
+        }
+        val path = saveBitmap(resource)
+        if (path.isNotEmpty()) {
+            Log.e("photo saved in path:", path)
+        } else {
+            Toast.makeText(this@CameraActivity, "照片保存失败", Toast.LENGTH_SHORT).show()
+        }
+        val intent = Intent()
+        intent.putExtra("imagePath", path)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
+    private fun generateBitmap(camera: Camera, data: ByteArray): Bitmap? {
+        val size = camera.parameters.previewSize
+        val w = size.width
+        val h = size.height
+        val image = YuvImage(data, ImageFormat.NV21,
+                w, h, null)
+        val os = ByteArrayOutputStream()
+        if (!image.compressToJpeg(Rect(0, 0, w, h), 100, os)) {
+            return null
+        }
+        val tmp = os.toByteArray()
+        return BitmapFactory.decodeByteArray(tmp, 0, tmp.size, BitmapFactory.Options())
     }
 
     private fun saveBitmap(resource: Bitmap): String {
@@ -150,7 +168,6 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-        take_photo.isEnabled = true
         cameraManager.openDriver(mSurfaceHolder)
         cameraManager.startPreview()
     }
