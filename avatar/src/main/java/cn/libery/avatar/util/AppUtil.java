@@ -25,6 +25,6 @@ public class AppUtil {
     }
 
     public static String yyyyMMddHHmmss(long date) {
-        return new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.getDefault()).format(date);
+        return new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(date);
     }
 }
